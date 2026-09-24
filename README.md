@@ -239,5 +239,132 @@ The following safeguards apply:
 
 Retries and timeouts are not applicable because this task uses only local in-memory processing and does not make external calls.
 
+---
+
+## Task 4 — Privacy Lifecycle
+
+Task 4 implements privacy and lifecycle controls for the working memory module.
+
+The assessment specifically states that durable memory requires:
+
+* Consent
+* Retention
+* Deletion
+* Access rules
+
+This task reuses the previous memory store and adds these lifecycle behaviors without duplicating earlier validation logic.
+
+### Implementation
+
+The `PrivacyMemoryStore` class extends `MemoryStore` from Task 2.
+
+It adds:
+
+* `delete_memory()` — removes a stored memory.
+* `clear_expired_short_term()` — removes short-term memories that exceed the retention period.
+* `access_memories()` — controls whether long-term memories can be accessed.
+
+Consent for long-term memory is already enforced by the memory schema from Task 1.
+
+### Consent
+
+Long-term memory still requires explicit consent.
+
+Because Task 4 inherits the previous memory implementation, this rule remains active:
+
+```python
+store.store(
+    content="User prefers concise examples.", memory_type="long_term", consent=True)
+```
+
+A long-term memory without consent is rejected before storage.
+
+### Retention
+
+Short-term memories can be removed after a configured retention period.
+
+The implementation checks the creation time of short-term memories and removes those older than the configured retention window.
+
+Invalid retention values such as `0` or negative values are rejected.
+
+### Deletion
+
+Stored memories can be explicitly deleted.
+
+The method returns `True` when a matching memory is successfully removed.
+
+### Access Rules
+
+Long-term memory is not automatically exposed to every caller.
+
+Example:
+
+```python
+store.access_memories(allow_long_term=False)
+```
+
+When long-term access is disabled, only allowed memories are returned.
+
+This demonstrates that storing information and accessing information are treated as separate operations.
+
+## Success Path
+
+The implementation demonstrates:
+
+* Memories are stored successfully.
+* Long-term memories can be restricted from access.
+* A stored memory can be deleted.
+* Remaining memory counts can be observed.
+
+## Failure Path
+
+An invalid retention period is rejected.
+
+## Run Task 4
+
+Run the privacy lifecycle demonstration:
+
+```bash
+python -m privacy_lifecycle.privacy_lifecycle
+```
+
+## Run Automated Tests
+
+```bash
+pytest tests/test_privacy_lifecycle.py -v
+```
+
+## Evidence
+
+The implementation demonstrates the required privacy lifecycle controls:
+
+* **Consent** — long-term memory continues to require consent from Task 1.
+* **Retention** — short-term memory can be removed using a retention rule.
+* **Deletion** — stored memory can be explicitly removed.
+* **Access rules** — long-term memory can be hidden when access is not allowed.
+
+## Reuse from Previous Tasks
+
+Task 4 imports and reuses the earlier memory implementation:
+
+```python
+from store_recall import MemoryStore
+```
+
+This means memory creation, validation, storage, recall, and consent rules remain centralized.
+
+## Guardrails
+
+The following safeguards apply:
+
+* **Validation:** Invalid retention values are rejected.
+* **Consent:** Long-term memory requires explicit consent.
+* **Retention:** Short-term memory follows a defined retention window.
+* **Deletion:** Stored memories can be removed.
+* **Access control:** Long-term memory access can be restricted.
+* **Secret hygiene:** No credentials or secrets are stored in source code.
+
+Retries and timeouts are not applicable because this task uses only local in-memory operations and does not call external services.
+
 
 

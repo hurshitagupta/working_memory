@@ -1,0 +1,16 @@
+=== PRIVACY LIFECYCLE DEMO ===
+
+Memories stored:
+Total memories: 2
+
+Access without long-term permission:
+Accessible: Discussed working memory today.
+Accessible memories: 1
+
+Deletion:
+Memory deleted: True
+Remaining memories: 1
+
+Failure path:
+Status: rejected
+Reason: Retention period must be greater than 0.
