@@ -1,0 +1,9 @@
+=== MEMORY SCHEMA DEMO ===
+
+Happy path:
+MemoryItem(content='User prefers concise examples.', memory_type='long_term', created_at='2026-09-24T12:22:39', consent=True)
+Status: accepted
+
+Failure path:
+Status: rejected
+Reason: Consent is required for long-term memory.
