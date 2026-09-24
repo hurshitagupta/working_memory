@@ -141,4 +141,103 @@ The following safeguards apply:
 
 Step limits, retries, and timeouts are not applicable here because this task uses only local in-memory operations and does not contain loops, external API calls, or blocking operations.
 
+---
+
+## Task 3 — Relevance Limits
+
+Task 3 adds relevance-based recall and result limits to the working memory module.
+
+It reuses the `MemoryStore` created in Task 2 and ranks stored memories based on how many query words match the memory content.
+
+### Implementation
+
+The task introduces two functions:
+
+* `relevance_score()` — calculates a simple relevance score using word overlap.
+* `recall_relevant()` — returns only relevant memories, sorted by score and restricted by a result limit.
+
+Before comparing words, punctuation is removed so values such as `examples` and `examples.` are treated as the same word.
+
+The higher-scoring memory is returned first.
+
+### Limit Handling
+
+The `limit` argument controls the maximum number of memories returned.
+
+For example:
+
+```python
+recall_relevant(store=store,query="Python examples",limit=1)
+```
+
+returns only the highest-ranked matching memory.
+
+A limit of `0` or less is rejected with a `ValueError`.
+
+## Success Path
+
+Relevant memories are scored, ranked, and limited successfully.
+
+
+## Failure Path
+
+An invalid limit is rejected.
+
+
+## Run Task 3
+
+Run the relevance limits demonstration:
+
+```bash
+python -m relevance_limits.relevance_limits
+```
+
+## Run Automated Tests
+
+```bash
+pytest tests/test_relevance_limits.py -v
+```
+
+## Evidence
+
+The automated tests verify:
+
+**Success case:**
+
+* Relevant memories are ranked correctly.
+* Higher-scoring memories are returned first.
+* The requested result limit is respected.
+
+**Failure case:**
+
+* Invalid limits are rejected.
+
+The output also provides observable measurements through:
+
+* Relevance score
+* Number of results returned
+
+## Reuse from Previous Tasks
+
+Task 3 imports and reuses:
+
+```python
+from store_recall import MemoryStore
+```
+
+This means memory creation and validation continue to use the logic already implemented in Tasks 1 and 2.
+
+## Guardrails
+
+The following safeguards apply:
+
+* **Validation:** Empty queries and invalid limits are rejected.
+* **Relevance boundary:** Memories with a relevance score of `0` are not returned.
+* **Result limit:** Recall results are capped using the requested limit.
+* **Consent:** Long-term memory still follows the consent rules from Task 1.
+* **Secret hygiene:** No secrets or credentials are included in the implementation.
+
+Retries and timeouts are not applicable because this task uses only local in-memory processing and does not make external calls.
+
+
 

@@ -1,0 +1,12 @@
+=== RELEVANCE LIMITS DEMO ===
+
+Happy path:
+Results returned: 2
+Memory: User prefers concise Python examples.
+Relevance score: 1
+Memory: User likes Python programming.
+Relevance score: 1
+
+Failure path:
+Status: rejected
+Reason: Limit must be greater than 0.
