@@ -366,5 +366,142 @@ The following safeguards apply:
 
 Retries and timeouts are not applicable because this task uses only local in-memory operations and does not call external services.
 
+---
+
+## Task 5 — Memory Test
+
+Task 5 performs an end-to-end test of the working memory module.
+
+It reuses the implementations from the previous tasks and verifies that storage, relevance-based recall, access control, deletion, validation, and measurement work together correctly.
+
+### Implementation
+
+Task 5 uses:
+
+```python
+from privacy_lifecycle.privacy_lifecycle import PrivacyMemoryStore
+from relevance_limits.relevance_limits import recall_relevant
+```
+
+This avoids duplicating earlier logic.
+
+The workflow is:
+
+1. Store valid memories.
+2. Recall the most relevant memory.
+3. Apply access restrictions.
+4. Delete a stored memory.
+5. Record execution measurements.
+
+A `safe_store()` function is also added to reject obvious sensitive information before it enters memory.
+
+### Sensitive Data Protection
+
+The assessment states that secrets or sensitive information should not be stored merely because they are mentioned.
+
+The implementation checks for obvious sensitive terms such as:
+
+```text
+password
+api key
+secret key
+token
+```
+
+If detected, the memory is rejected before storage.
+
+
+### Step Limit
+
+The complete workflow uses a hard step limit:
+
+```python
+MAX_STEPS = 5
+```
+
+The current workflow completes in four steps.
+
+This provides a simple safeguard against unexpectedly long execution flows.
+
+### Measurement
+
+Execution time is measured using `perf_counter()`.
+
+The final result reports:
+
+* Steps completed
+* Memories stored
+* Relevant memories recalled
+* Accessible memories
+* Deletion status
+* Remaining memories
+* Execution latency
+
+### Success Path
+
+The successful workflow performs:
+
+```text
+Store
+→ Recall
+→ Access Control
+→ Delete
+```
+
+### Failure Path
+
+Sensitive information is rejected before it is stored.
+
+The automated test also confirms that the memory store remains empty after rejection.
+
+## Run Task 5
+
+Run the complete memory test:
+
+```bash
+python -m memory_test.memory_test
+```
+
+## Run Automated Tests
+
+```bash
+pytest tests/test_memory_test.py -v
+```
+
+
+## Evidence
+
+The automated tests verify:
+
+**Success case:**
+
+* Memories are stored successfully.
+* Relevant memory is recalled.
+* Access rules are applied.
+* A memory is deleted successfully.
+* Memory counts are correct.
+* Execution latency is recorded.
+
+**Failure case:**
+
+* Sensitive information is rejected.
+* Rejected sensitive information is not added to memory.
+
+
+## Guardrails
+
+The following safeguards are demonstrated:
+
+* **Step limit:** The workflow has a hard maximum number of execution steps.
+* **Validation:** Invalid and sensitive memory writes are rejected.
+* **Consent:** Long-term memory continues to require consent.
+* **Relevance limit:** Recall results remain limited and relevance-based.
+* **Privacy lifecycle:** Access and deletion rules are applied.
+* **Secret hygiene:** Sensitive information is rejected before memory storage.
+* **Measurement:** Execution latency and memory counts are recorded.
+
+Retries and external-operation timeouts are not required because this implementation uses only local in-memory operations and does not perform external service calls.
+
+
 
 
