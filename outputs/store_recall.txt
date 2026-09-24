@@ -1,0 +1,12 @@
+=== STORE / RECALL DEMO ===
+
+Storing memories...
+Total memories stored: 2
+
+Happy path:
+Recalled: User prefers concise examples.
+Matches found: 1
+
+Failure path:
+Status: rejected
+Reason: Recall query cannot be empty.
